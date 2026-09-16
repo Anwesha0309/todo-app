@@ -87,12 +87,12 @@ class GamificationRepository(context: Context) {
 
     private fun getLevelInfo(xp: Int): Quadruple<Int, String, Int, Int> {
         return when {
-            xp < 100 -> Quadruple(1, "Associate Analyst", 0, 100)
-            xp < 250 -> Quadruple(2, "Senior Planner", 100, 250)
-            xp < 500 -> Quadruple(3, "Operations Specialist", 250, 500)
-            xp < 900 -> Quadruple(4, "Strategic Manager", 500, 900)
-            xp < 1500 -> Quadruple(5, "Director of Delivery", 900, 1500)
-            else -> Quadruple(6, "Executive Strategist", 1500, 2500)
+            xp < 100 -> Quadruple(1, "Beginner", 0, 100)
+            xp < 250 -> Quadruple(2, "Steady Planner", 100, 250)
+            xp < 500 -> Quadruple(3, "Goal Getter", 250, 500)
+            xp < 900 -> Quadruple(4, "Productivity Pro", 500, 900)
+            xp < 1500 -> Quadruple(5, "Master Organizer", 900, 1500)
+            else -> Quadruple(6, "Achiever", 1500, 2500)
         }
     }
 

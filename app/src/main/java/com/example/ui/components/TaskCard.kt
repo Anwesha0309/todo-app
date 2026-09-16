@@ -177,9 +177,9 @@ fun TaskCard(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(14.dp)
+                    .padding(16.dp)
             ) {
-                // Top Row: Category Pill, Priority Badge, Recurrence Pill, XP Tag, Overdue Tag, and Actions
+                // Top Row: Category Pill, Priority (if High/Urgent), Overdue Tag, and Actions
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -192,52 +192,54 @@ fun TaskCard(
                     ) {
                         // Category Pill
                         Surface(
-                            color = categoryColor.copy(alpha = 0.12f),
+                            color = categoryColor.copy(alpha = 0.14f),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     imageVector = categoryVector,
                                     contentDescription = null,
                                     tint = categoryColor,
-                                    modifier = Modifier.size(12.dp)
+                                    modifier = Modifier.size(13.dp)
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
                                 Text(
                                     text = task.taskCategory.displayName,
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = categoryColor
                                 )
                             }
                         }
 
-                        // Distinct Priority Badge with Icon
-                        Surface(
-                            color = priorityColor.copy(alpha = 0.16f),
-                            border = BorderStroke(1.dp, priorityColor.copy(alpha = 0.4f)),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                        // Priority Badge shown for High and Urgent priority
+                        if (task.taskPriority == TaskPriority.URGENT || task.taskPriority == TaskPriority.HIGH) {
+                            Surface(
+                                color = priorityColor.copy(alpha = 0.16f),
+                                border = BorderStroke(1.dp, priorityColor.copy(alpha = 0.4f)),
+                                shape = RoundedCornerShape(8.dp)
                             ) {
-                                Icon(
-                                    imageVector = priorityVector,
-                                    contentDescription = null,
-                                    tint = priorityColor,
-                                    modifier = Modifier.size(11.dp)
-                                )
-                                Spacer(modifier = Modifier.width(3.dp))
-                                Text(
-                                    text = task.taskPriority.label,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = priorityColor
-                                )
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = priorityVector,
+                                        contentDescription = null,
+                                        tint = priorityColor,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = task.taskPriority.label,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = priorityColor
+                                    )
+                                }
                             }
                         }
 
@@ -249,39 +251,23 @@ fun TaskCard(
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Repeat,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(11.dp)
+                                        modifier = Modifier.size(12.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = task.recurrenceLabel,
-                                        fontSize = 10.sp,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 }
-                            }
-                        }
-
-                        // Gamified XP Potential Reward Tag
-                        if (!task.isCompleted) {
-                            Surface(
-                                color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.12f),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = priorityXp,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
-                                )
                             }
                         }
 
@@ -292,79 +278,111 @@ fun TaskCard(
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
-                                    text = "OVERDUE",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.ExtraBold,
+                                    text = "Overdue",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
                                     color = Color.White,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
                                 )
                             }
                         }
                     }
 
-                    // Quick action: Test Notification Icon button
-                    if (task.hasReminder && !task.isCompleted) {
+                    // Top Right Quick Actions: Edit and Delete buttons (48dp touch targets)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
-                            onClick = onTestNotification,
+                            onClick = onClick,
                             modifier = Modifier
-                                .size(28.dp)
-                                .testTag("notify_btn_${task.id}")
+                                .size(36.dp)
+                                .testTag("btn_edit_task_${task.id}")
                         ) {
                             Icon(
-                                imageVector = Icons.Default.NotificationsActive,
-                                contentDescription = "Test Notification",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit task",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = onDelete,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .testTag("btn_delete_task_${task.id}")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteOutline,
+                                contentDescription = "Delete task",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            // Middle Row: Checkbox, Title, and Description
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
-            ) {
-                Checkbox(
-                    checked = task.isCompleted,
-                    onCheckedChange = { onToggleComplete() },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.primary,
-                        uncheckedColor = MaterialTheme.colorScheme.outline
-                    ),
-                    modifier = Modifier
-                        .size(28.dp)
-                        .testTag("task_checkbox_${task.id}")
-                )
+                // Middle Row: Large Checkbox (48dp touch target) and Title / Description
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .clickable { onToggleComplete() }
+                            .testTag("task_checkbox_target_${task.id}"),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Checkbox(
+                            checked = task.isCompleted,
+                            onCheckedChange = null,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colorScheme.primary,
+                                uncheckedColor = MaterialTheme.colorScheme.outline
+                            ),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .testTag("task_checkbox_${task.id}")
+                        )
+                    }
 
-                Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = task.title,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
-                        ),
-                        color = if (task.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    if (task.description.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(4.dp))
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onClick() }
+                    ) {
                         Text(
-                            text = task.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text = task.title,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                lineHeight = 22.sp,
+                                textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
+                            ),
+                            color = if (task.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurface,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
+
+                        if (task.description.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = task.description,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontSize = 13.sp,
+                                    lineHeight = 18.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
-            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
